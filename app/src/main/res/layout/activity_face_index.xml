@@ -9,10 +9,9 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="400dp"
         android:background="@mipmap/face"
         android:visibility="visible"/>
-    <!--滑动解锁模块-->
     <RelativeLayout
         android:id="@+id/afi_click_layout"
         android:layout_width="wrap_content"
@@ -24,8 +23,8 @@
 
         <ImageView
             android:id="@+id/afi_click_img"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
             android:layout_centerInParent="true"
             android:background="@mipmap/face2"/>
 
@@ -34,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="点击或者读出“你好小池”"
+            android:text="点击或者读出“你好小驰”"
             android:textColor="@color/white"
             android:textSize="24sp"/>
     </RelativeLayout>

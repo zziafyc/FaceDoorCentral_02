@@ -24,8 +24,9 @@
 
     <RelativeLayout
         android:id="@+id/img_rv"
-        android:layout_width="35dp"
-        android:layout_height="35dp">
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginRight="15dp">
 
         <ImageView
             android:id="@+id/dropview_image"
