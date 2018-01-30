@@ -268,7 +268,7 @@ public class VideoDetect extends BaseAppCompatActivity implements DialogInterfac
                 while (!mStopTrack) {
                     //规定检测时间为：
                     SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
-                    String detectTimeValue = config.getString(MyApp.DETECT_TIME_VALUE, "30");
+                    String detectTimeValue = config.getString(MyApp.DETECT_TIME_VALUE, "60");
                     if (System.currentTimeMillis() - lastTime > Integer.parseInt(detectTimeValue) * 1000) {
                         finish();
                         break;
@@ -386,7 +386,6 @@ public class VideoDetect extends BaseAppCompatActivity implements DialogInterfac
                             // mIntent.putExtra("pic", cameraPic);
                             // mHandler.sendEmptyMessage(START_IDENTIFY);
                             startActivity(mIntent);
-                            finish();
                         }
                     }
                 }
