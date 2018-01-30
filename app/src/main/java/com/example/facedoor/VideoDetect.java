@@ -4,6 +4,7 @@ import android.Manifest.permission;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -266,7 +267,9 @@ public class VideoDetect extends BaseAppCompatActivity implements DialogInterfac
             public void run() {
                 while (!mStopTrack) {
                     //规定检测时间为：
-                    if (System.currentTimeMillis() - lastTime > 30000) {
+                    SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+                    String detectTimeValue = config.getString(MyApp.DETECT_TIME_VALUE, "30");
+                    if (System.currentTimeMillis() - lastTime > Integer.parseInt(detectTimeValue) * 1000) {
                         finish();
                         break;
                     }

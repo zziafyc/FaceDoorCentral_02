@@ -64,6 +64,7 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
     private EditText mDoorNum;
     private EditText mDbAgent;
     private EditText mVoiceValue;
+    private EditText mDetectTimeValue;
     private String groupId2;
 
     // 身份验证对象
@@ -76,100 +77,103 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
 
     @Override
     protected void initViewsAndEvents() {
-        {
+        Button btnCreate = (Button) findViewById(R.id.btn_create);
+        Button btnDelete = (Button) findViewById(R.id.btn_delete);
+        Button btnAdd = (Button) findViewById(R.id.btn_add);
+        btnCreate.setOnClickListener(this);
+        btnDelete.setOnClickListener(this);
+        btnAdd.setOnClickListener(this);
+        findViewById(R.id.btn_dbip).setOnClickListener(this);
+        findViewById(R.id.btn_doorip).setOnClickListener(this);
+        findViewById(R.id.btn_dbAgent).setOnClickListener(this);
+        findViewById(R.id.btn_doorController).setOnClickListener(this);
+        findViewById(R.id.btn_openTime).setOnClickListener(this);
+        findViewById(R.id.btn_platformIP).setOnClickListener(this);
+        findViewById(R.id.btn_doorNum).setOnClickListener(this);
+        findViewById(R.id.btn_voiceValue).setOnClickListener(this);
+        findViewById(R.id.btn_detectTimeValue).setOnClickListener(this);
 
 
-            Button btnCreate = (Button) findViewById(R.id.btn_create);
-            Button btnDelete = (Button) findViewById(R.id.btn_delete);
-            Button btnAdd = (Button) findViewById(R.id.btn_add);
-            btnCreate.setOnClickListener(this);
-            btnDelete.setOnClickListener(this);
-            btnAdd.setOnClickListener(this);
-            findViewById(R.id.btn_dbip).setOnClickListener(this);
-            findViewById(R.id.btn_doorip).setOnClickListener(this);
-            findViewById(R.id.btn_dbAgent).setOnClickListener(this);
-            findViewById(R.id.btn_doorController).setOnClickListener(this);
-            findViewById(R.id.btn_openTime).setOnClickListener(this);
-            findViewById(R.id.btn_platformIP).setOnClickListener(this);
-            findViewById(R.id.btn_doorNum).setOnClickListener(this);
-            findViewById(R.id.btn_voiceValue).setOnClickListener(this);
+        SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+        String dbIP = config.getString(MyApp.DBIP_KEY, "");
+        String doorip = config.getString(MyApp.DOORIP_KEY, "");
+        String doorcontroller = config.getString(MyApp.DOOR_CONTROLLER, "");
+        String opentime = config.getString(MyApp.OPEN_TIME, "");
+        String platformip = config.getString(MyApp.PLATFORM_IP, "");
+        String doornum = config.getString(MyApp.DOOR_NUM, "");
+        String dbagent = config.getString(MyApp.DB_AGENT, "");
+        String voiceValue = config.getString(MyApp.VOICE_VALUE, "60");
+        String detectTimeValue = config.getString(MyApp.DETECT_TIME_VALUE, "30");
 
+        mGroupDrop = (DropEditText) findViewById(R.id.drop_edit);
+        mDBIP = (EditText) findViewById(R.id.et_dbip);
+        mDoorIP = (EditText) findViewById(R.id.et_doorip);
+        mDoorContoller = (EditText) findViewById(R.id.et_doorController);
+        mDoorTime = (EditText) findViewById(R.id.et_openTime);
+        mPlatformIP = (EditText) findViewById(R.id.et_platformIP);
+        mDoorNum = (EditText) findViewById(R.id.et_doorNum);
+        mDbAgent = (EditText) findViewById(R.id.et_dbAgent);
+        mVoiceValue = (EditText) findViewById(R.id.et_voiceValue);
+        mDetectTimeValue = (EditText) findViewById(R.id.et_detectTimeValue);
+        mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
-            SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
-            String dbIP = config.getString(MyApp.DBIP_KEY, "");
-            String doorip = config.getString(MyApp.DOORIP_KEY, "");
-            String doorcontroller = config.getString(MyApp.DOOR_CONTROLLER, "");
-            String opentime = config.getString(MyApp.OPEN_TIME, "");
-            String platformip = config.getString(MyApp.PLATFORM_IP, "");
-            String doornum = config.getString(MyApp.DOOR_NUM, "");
-            String dbagent = config.getString(MyApp.DB_AGENT, "");
-            String voiceValue = config.getString(MyApp.VOICE_VALUE, "60");
-
-            mGroupDrop = (DropEditText) findViewById(R.id.drop_edit);
-            mDBIP = (EditText) findViewById(R.id.et_dbip);
-            mDoorIP = (EditText) findViewById(R.id.et_doorip);
-            mDoorContoller = (EditText) findViewById(R.id.et_doorController);
-            mDoorTime = (EditText) findViewById(R.id.et_openTime);
-            mPlatformIP = (EditText) findViewById(R.id.et_platformIP);
-            mDoorNum = (EditText) findViewById(R.id.et_doorNum);
-            mDbAgent = (EditText) findViewById(R.id.et_dbAgent);
-            mVoiceValue = (EditText) findViewById(R.id.et_voiceValue);
-            mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
-
-            if (dbIP != null) {
-                mDBIP.setText(dbIP);
-            }
-            if (mDoorIP != null) {
-                mDoorIP.setText(doorip);
-            }
-            if (mDoorContoller != null) {
-                mDoorContoller.setText(doorcontroller);
-            }
-            if (mDoorTime != null) {
-                mDoorTime.setText(opentime);
-            }
-            if (mPlatformIP != null) {
-                mPlatformIP.setText(platformip);
-            }
-            if (mDoorNum != null) {
-                mDoorNum.setText(doornum);
-            }
-            if (mDbAgent != null) {
-                mDbAgent.setText(dbagent);
-            }
-            if (mVoiceValue != null) {
-                mVoiceValue.setText(voiceValue);
-            }
-
-            mProDialog = new ProgressDialog(this);
-            // 等待框设置为不可取消
-            mProDialog.setCancelable(true);
-            mProDialog.setCanceledOnTouchOutside(false);
-            mProDialog.setTitle("请稍候");
-
-            mProDialog.setOnCancelListener(new OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    // cancel进度框时,取消正在进行的操作
-                    if (null != mIdVerifier) {
-                        mIdVerifier.cancel();
-                    }
-                }
-            });
-
-            mIdVerifier = IdentityVerifier.createVerifier(this, new InitListener() {
-
-                @Override
-                public void onInit(int errorCode) {
-                    if (errorCode == ErrorCode.SUCCESS) {
-                        // ToastShow.showTip(mToast, "引擎初始化成功");
-                    } else {
-                        ToastShow.showTip(mToast, "引擎初始化失败。错误码：" + errorCode);
-                    }
-                }
-            });
+        if (dbIP != null) {
+            mDBIP.setText(dbIP);
         }
+        if (mDoorIP != null) {
+            mDoorIP.setText(doorip);
+        }
+        if (mDoorContoller != null) {
+            mDoorContoller.setText(doorcontroller);
+        }
+        if (mDoorTime != null) {
+            mDoorTime.setText(opentime);
+        }
+        if (mPlatformIP != null) {
+            mPlatformIP.setText(platformip);
+        }
+        if (mDoorNum != null) {
+            mDoorNum.setText(doornum);
+        }
+        if (mDbAgent != null) {
+            mDbAgent.setText(dbagent);
+        }
+        if (mVoiceValue != null) {
+            mVoiceValue.setText(voiceValue);
+        }
+        if (mDetectTimeValue != null) {
+            mDetectTimeValue.setText(detectTimeValue);
+        }
+
+        mProDialog = new ProgressDialog(this);
+        // 等待框设置为不可取消
+        mProDialog.setCancelable(true);
+        mProDialog.setCanceledOnTouchOutside(false);
+        mProDialog.setTitle("请稍候");
+
+        mProDialog.setOnCancelListener(new OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                // cancel进度框时,取消正在进行的操作
+                if (null != mIdVerifier) {
+                    mIdVerifier.cancel();
+                }
+            }
+        });
+
+        mIdVerifier = IdentityVerifier.createVerifier(this, new InitListener() {
+
+            @Override
+            public void onInit(int errorCode) {
+                if (errorCode == ErrorCode.SUCCESS) {
+                    // ToastShow.showTip(mToast, "引擎初始化成功");
+                } else {
+                    ToastShow.showTip(mToast, "引擎初始化失败。错误码：" + errorCode);
+                }
+            }
+        });
     }
+
 
     @Override
     public void onClick(View arg0) {
@@ -207,7 +211,10 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
                 break;
             case R.id.btn_voiceValue:
                 setVoiceValue();
-
+                break;
+            case R.id.btn_detectTimeValue:
+                setDetectTimeValue();
+                break;
         }
     }
 
@@ -281,6 +288,15 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
         SharedPreferences.Editor editor = config.edit();
         String voiceValue = mVoiceValue.getText().toString();
         editor.putString(MyApp.VOICE_VALUE, voiceValue);
+        editor.commit();
+        ToastShow.showTip(mToast, "设置成功");
+    }
+
+    private void setDetectTimeValue() {
+        SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+        SharedPreferences.Editor editor = config.edit();
+        String voiceValue = mDetectTimeValue.getText().toString();
+        editor.putString(MyApp.DETECT_TIME_VALUE, voiceValue);
         editor.commit();
         ToastShow.showTip(mToast, "设置成功");
     }

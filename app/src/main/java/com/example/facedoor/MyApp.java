@@ -19,6 +19,7 @@ public class MyApp extends Application {
     public static final String DOOR_NUM = "doornum";
     public static final String DB_AGENT = "dbagent";
     public static final String VOICE_VALUE = "voiceValue";
+    public static final String DETECT_TIME_VALUE = "detectTimeValue";
     public static final String CONFIG = "config";
     private static MyApp instance;
     public static DBManage db;
