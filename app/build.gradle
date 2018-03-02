@@ -18,7 +18,7 @@ android {
     defaultConfig {
         applicationId "com.example.facedoor"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -48,7 +48,7 @@ dependencies {
     /*引入butterKnife*/
     /*eventBus事件总线*/
     /*网络图片加载库*/
-    compile(name: 'lib-dds', ext: 'aar')
+    compile(name: 'lib-dds-1.0.8.1-release', ext: 'aar')
     annotationProcessor "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
     compile 'com.android.support:appcompat-v7:25.3.1'

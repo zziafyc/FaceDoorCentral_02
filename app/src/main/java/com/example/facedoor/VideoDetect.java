@@ -386,6 +386,10 @@ public class VideoDetect extends BaseAppCompatActivity implements DialogInterfac
                             // mIntent.putExtra("pic", cameraPic);
                             // mHandler.sendEmptyMessage(START_IDENTIFY);
                             startActivity(mIntent);
+                            int faceDetect = config.getInt(MyApp.FACEDETECT, 0);
+                            if (faceDetect == 0) {
+                                finish();
+                            }
                         }
                     }
                 }

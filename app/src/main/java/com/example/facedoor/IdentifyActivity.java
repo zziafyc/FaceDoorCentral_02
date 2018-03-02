@@ -95,7 +95,7 @@ public class IdentifyActivity extends Activity {
     private int mPwdType = PWD_TYPE_TEXT;
     private static final int PWD_TYPE_TEXT = 1;
     // 声纹验证通过时间
-    private static final int VOICE_SUCCESS = 5000;
+    private static final int VOICE_SUCCESS = 2000;
     // 声纹验证失败时间
     private static final int VOICE_FAILED = 1000;
     // 声纹验证出错时间
@@ -373,16 +373,15 @@ public class IdentifyActivity extends Activity {
                     Observable.create(new OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> arg0) {
-                            DBUtil dbUtil = new DBUtil(IdentifyActivity.this);
-                            int faceVocal = dbUtil.queryFaceVocal();
-                            // arg0.onNext(faceVocal);
-                            arg0.onNext(1);
+                            SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+                            int faceVocal = config.getInt(MyApp.FACEONLY, 0);
+                            arg0.onNext(faceVocal);
                         }
                     }).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Action1<Integer>() {
                                 @Override
                                 public void call(Integer faceVocal) {
-                                    if (faceVocal == 0) {
+                                    if (faceVocal == 1) {
                                         faceOnlySuceess();
                                     } else {
                                         mResultEditText.setText("您的验证码：" + "芝麻开门");

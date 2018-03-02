@@ -962,12 +962,16 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                                     @Override
                                     public void onNext(String mAuthId) {
                                         ToastShow.showTip(mToast, "人脸注册成功");
+                                        SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+                                        String faceOnly = config.getString(MyApp.FACEONLY, "0");
+                                        if (faceOnly.equals("0")) {
+                                            // 跳转到声纹识别界面
+                                            Intent intent = new Intent();
+                                            intent.putExtra("ID", mAuthId);
+                                            intent.setClass(RegisterActivity.this, IsvDemo.class);
+                                            startActivity(intent);
+                                        }
                                         finish();
-                                        // 跳转到声纹识别界面
-                                        Intent intent = new Intent();
-                                        intent.putExtra("ID", mAuthId);
-                                        intent.setClass(RegisterActivity.this, IsvDemo.class);
-                                        startActivity(intent);
                                     }
                                 });
 

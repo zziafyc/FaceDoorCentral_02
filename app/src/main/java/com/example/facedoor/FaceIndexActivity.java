@@ -220,9 +220,11 @@ public class FaceIndexActivity extends BaseAppCompatActivity implements DialogIn
         if (wakeupWords != null && wakeupWords.length == 2) {
             hiStr = getString(R.string.hi_str2, wakeupWords[0], wakeupWords[1]);
             wakeUpString = wakeupWords[0];
-        } else if (wakeupWords != null) {
+        } else if (wakeupWords != null && wakeupWords.length > 0) {
             hiStr = getString(R.string.hi_str, wakeupWords[0]);
             wakeUpString = wakeupWords[0];
+        } else {
+            wakeUpString = "你好小驰";
         }
         if (!StringUtils.isEmpty(wakeUpString)) {
             wakeTv.setText("点击或者读出“" + wakeUpString + "“");

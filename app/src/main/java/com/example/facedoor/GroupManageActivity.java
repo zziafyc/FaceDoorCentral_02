@@ -11,9 +11,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.facedoor.base.BaseAppCompatActivity;
@@ -66,6 +68,8 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
     private EditText mVoiceValue;
     private EditText mDetectTimeValue;
     private String groupId2;
+    private Spinner spinner;
+    private Spinner spinnerFaceDetect;
 
     // 身份验证对象
     private IdentityVerifier mIdVerifier;
@@ -92,6 +96,40 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
         findViewById(R.id.btn_doorNum).setOnClickListener(this);
         findViewById(R.id.btn_voiceValue).setOnClickListener(this);
         findViewById(R.id.btn_detectTimeValue).setOnClickListener(this);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] mode = getResources().getStringArray(R.array.mode);
+                SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+                SharedPreferences.Editor editor = config.edit();
+                editor.putInt(MyApp.FACEONLY, position);
+                editor.commit();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
+        spinnerFaceDetect = (Spinner) findViewById(R.id.spinnerFaceDetect);
+        spinnerFaceDetect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String[] mode = getResources().getStringArray(R.array.mode);
+                SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+                SharedPreferences.Editor editor = config.edit();
+                editor.putInt(MyApp.FACEDETECT, position);
+                editor.commit();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+
+            }
+        });
 
 
         SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
@@ -104,6 +142,8 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
         String dbagent = config.getString(MyApp.DB_AGENT, "");
         String voiceValue = config.getString(MyApp.VOICE_VALUE, "60");
         String detectTimeValue = config.getString(MyApp.DETECT_TIME_VALUE, "60");
+        int faceVocal = config.getInt(MyApp.FACEONLY, 0);
+        int faceDetect = config.getInt(MyApp.FACEDETECT, 0);
 
         mGroupDrop = (DropEditText) findViewById(R.id.drop_edit);
         mDBIP = (EditText) findViewById(R.id.et_dbip);
@@ -115,6 +155,9 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
         mDbAgent = (EditText) findViewById(R.id.et_dbAgent);
         mVoiceValue = (EditText) findViewById(R.id.et_voiceValue);
         mDetectTimeValue = (EditText) findViewById(R.id.et_detectTimeValue);
+        spinner.setSelection(faceVocal);
+        spinnerFaceDetect.setSelection(faceDetect);
+
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
         if (dbIP != null) {
@@ -331,6 +374,11 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
         if (adp != null) {
             adp.notifyDataSetChanged();
         }
+        SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+        int faceVocal = config.getInt(MyApp.FACEONLY, 0);
+        int faceDetect = config.getInt(MyApp.FACEDETECT, 0);
+        spinner.setSelection(faceVocal);
+        spinnerFaceDetect.setSelection(faceDetect);
 
     }
 

@@ -74,8 +74,7 @@
         <activity
             android:name=".VideoDetect"
             android:configChanges="orientation|screenSize"
-            android:label="@string/app_name"
-            android:screenOrientation="sensorPortrait"/>
+            android:label="@string/app_name"/>
         <activity
             android:name=".IdentifyActivity"
             android:label="@string/app_name"
@@ -109,11 +108,6 @@
         <activity
             android:name=".LauncherActivity"
             android:screenOrientation="sensorPortrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
         </activity>
         <activity
             android:name=".IndexActivity"
@@ -125,6 +119,14 @@
             android:name=".FaceIndexActivity"
             android:launchMode="singleTask"
             android:screenOrientation="sensorPortrait">
+        </activity>
+        <activity android:name=".LauncherActivity2">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
         </activity>
 
         <receiver android:name="com.example.facedoor.util.BootReceiver">
