@@ -67,9 +67,9 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-public class RegisterActivity extends BaseAppCompatActivity implements OnClickListener {
+public class RegisterActivity2 extends BaseAppCompatActivity implements OnClickListener {
 
-    private final static String TAG = RegisterActivity.class.getSimpleName();
+    private final static String TAG = RegisterActivity2.class.getSimpleName();
     private static final int REQUEST_GROUP_CHOOSE = 88;
     // 选择图片后返回
     public static final int REQUEST_PICK_PICTURE = 1;
@@ -78,10 +78,13 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
     // 裁剪图片成功后返回
     public static final int REQUEST_INTENT_CROP = 3;
     // 模型操作类型
-    private int mModelCmd;
+    private int mModelCmd = MODEL_DEL;
+    // 删除模型
+    private static final int PWD_TYPE_TEXT = 3;
+    // 查询模型
+    private static final int MODEL_QUE = 0;
     // 删除模型
     private static final int MODEL_DEL = 1;
-    private static final int PWD_TYPE_TEXT = 1;
     // 密码类型
     // 默认为文字密码
     private int mPwdType = PWD_TYPE_TEXT;
@@ -130,7 +133,8 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
             switch (msg.what) {
                 case DELETE:
                     //执行声纹删除模型
-                    performModelDelete("del");
+                    // performModelDelete("del");
+                    performModelDelete2("delete");
                     break;
 
                 default:
@@ -181,7 +185,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                 }
             }
         });
-        mVerifier = SpeakerVerifier.createVerifier(RegisterActivity.this, null);
+        mVerifier = SpeakerVerifier.createVerifier(RegisterActivity2.this, null);
         mIdVerifier = IdentityVerifier.createVerifier(this, new InitListener() {
 
             @Override
@@ -194,14 +198,14 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                 }
             }
         });
-        mToast = Toast.makeText(RegisterActivity.this, "", Toast.LENGTH_SHORT);
+        mToast = Toast.makeText(RegisterActivity2.this, "", Toast.LENGTH_SHORT);
 
         // do not put it in onResume(), cropPicture() cause quickly switch from onResume() to onPause()
         // at that time, mName2ID and mGroups are still empty in onPause()
         Observable.create(new OnSubscribe<ArrayList<String>>() {
             @Override
             public void call(Subscriber<? super ArrayList<String>> arg0) {
-                DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                 ArrayList<String> id = new ArrayList<String>();
                 ArrayList<String> name = new ArrayList<String>();
                 dbUtil.queryGroups(id, name);
@@ -309,7 +313,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                 mIsStaffExist = false;
                 Runnable queryStaffID = new Runnable() {
                     public void run() {
-                        DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                        DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                         try {
                             mIsStaffExist = dbUtil.isStaffExist(staffID);
                         } catch (Exception e) {
@@ -335,7 +339,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                 Observable.create(new OnSubscribe<Integer>() {
                     @Override
                     public void call(Subscriber<? super Integer> arg0) {
-                        DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                        DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                         dbUtil.insertUser(staffID, staffName);
                         int userID = dbUtil.queryUserID(staffID);
                         arg0.onNext(userID);
@@ -569,7 +573,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
         Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> arg0) {
-                DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                 int userID = dbUtil.queryUserID(staffID);
                 arg0.onNext(userID);
             }
@@ -731,7 +735,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                         } else {
                             new Thread() {
                                 public void run() {
-                                    DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                                    DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                                     dbUtil.deleteUserGroup(AuthIdToUserId(mAuthId));
                                 }
                             }.start();
@@ -759,7 +763,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
             // 1 reason put in onError(): group deleted before user quit(你输入的组尚未创建). Clean data base.
             new Thread() {
                 public void run() {
-                    DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                    DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                     dbUtil.deleteUserGroup(AuthIdToUserId(mAuthId));
                 }
             }.start();
@@ -813,6 +817,78 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
             }
         }
     };
+
+    //执行删除声纹
+    private void performModelDelete2(String cmd) {
+        mProDialog.setMessage("声纹删除中...");
+        mProDialog.show();
+        // 设置声纹模型参数
+        // 清空参数
+        mIdVerifier.setParameter(SpeechConstant.PARAMS, null);
+        // 设置会话场景
+        mIdVerifier.setParameter(SpeechConstant.MFV_SCENES, "ivp");
+        // 用户id
+        mIdVerifier.setParameter(SpeechConstant.AUTH_ID, mAuthId);
+
+        // 子业务执行参数，若无可以传空字符传
+        StringBuffer params3 = new StringBuffer();
+        // 设置模型操作的密码类型
+        params3.append("pwdt=" + mPwdType + ",");
+        // 执行模型操作
+        mIdVerifier.execute("ivp", cmd, params3.toString(), mDeleteModelListener);
+
+    }
+
+    private IdentityListener mDeleteModelListener = new IdentityListener() {
+
+        @Override
+        public void onResult(IdentityResult result, boolean islast) {
+            Log.d(TAG, "model operation:" + result.getResultString());
+
+            mProDialog.dismiss();
+
+            JSONObject jsonResult = null;
+            int ret = ErrorCode.SUCCESS;
+            try {
+                jsonResult = new JSONObject(result.getResultString());
+                ret = jsonResult.getInt("ret");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            switch (mModelCmd) {
+                case MODEL_QUE:
+                    if (ErrorCode.SUCCESS == ret) {
+                        ToastShow.showTip(RegisterActivity2.this, "模型存在");
+                    } else {
+                        ToastShow.showTip(RegisterActivity2.this, "模型不存在");
+                    }
+                    break;
+                case MODEL_DEL:
+                    if (ErrorCode.SUCCESS == ret) {
+                        ToastShow.showTip(RegisterActivity2.this, "模型已删除");
+                        finish();
+                    } else {
+                        ToastShow.showTip(RegisterActivity2.this, "模型删除失败");
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
+        }
+
+        @Override
+        public void onError(SpeechError error) {
+            mProDialog.dismiss();
+            ToastShow.showTip(RegisterActivity2.this, error.getPlainDescription(true));
+        }
+    };
+
     /**
      * 人脸模型操作监听器
      */
@@ -837,7 +913,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                 Observable.create(new OnSubscribe<String>() {
                     public void call(Subscriber<? super String> arg0) {
                         int userID = AuthIdToUserId(mAuthId);
-                        DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                        DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                         dbUtil.deleteUser(userID);
                         ArrayList<String> groupIDs = dbUtil.queryUserGroups(userID);
                         for (int i = 0; i < groupIDs.size(); i++) {
@@ -935,11 +1011,11 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                         groupHandler.sendEmptyMessage(JOIN_GROUP);
                     } else {
                         //fyc将这个换成了用rxJava来实现
-                        Observable.create(new Observable.OnSubscribe<String>() {
+                        Observable.create(new OnSubscribe<String>() {
                             @Override
                             public void call(Subscriber<? super String> subscriber) {
                                 int userID = AuthIdToUserId(mAuthId);
-                                DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                                DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                                 dbUtil.insertUserGroup(userID, mGroupJoined);
                                 subscriber.onNext(mAuthId);
 
@@ -969,7 +1045,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
                                             // 跳转到声纹识别界面
                                             Intent intent = new Intent();
                                             intent.putExtra("ID", mAuthId);
-                                            intent.setClass(RegisterActivity.this, IsvDemo2.class);
+                                            intent.setClass(RegisterActivity2.this, IsvDemo2.class);
                                             startActivity(intent);
                                         }
                                         finish();
@@ -1002,7 +1078,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
             new Thread() {
                 public void run() {
                     int userID = AuthIdToUserId(mAuthId);
-                    DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                    DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                     dbUtil.insertUserGroup(userID, mGroupJoined);
                 }
             }.start();
@@ -1050,7 +1126,7 @@ public class RegisterActivity extends BaseAppCompatActivity implements OnClickLi
             new Thread() {
                 public void run() {
                     int userId = AuthIdToUserId(mAuthId);
-                    DBUtil dbUtil = new DBUtil(RegisterActivity.this);
+                    DBUtil dbUtil = new DBUtil(RegisterActivity2.this);
                     dbUtil.deleteUser(userId);
                 }
             }.start();

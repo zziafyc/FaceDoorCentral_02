@@ -59,7 +59,7 @@ public class AdminActivity extends BaseAppCompatActivity implements OnClickListe
                 startActivity(intentGroup);
                 break;
             case R.id.btn_register:
-                Intent intentReg = new Intent(this, RegisterActivity.class);
+                Intent intentReg = new Intent(this, RegisterActivity2.class);
                 startActivity(intentReg);
                 break;
             case R.id.btn_query:

@@ -128,6 +128,11 @@
             </intent-filter>
 
         </activity>
+        <activity android:name=".IsvDemo2">
+        </activity>
+        <activity android:name=".IdentifyActivity2">
+        </activity>
+        <activity android:name=".RegisterActivity2"/>
 
         <receiver android:name="com.example.facedoor.util.BootReceiver">
             <intent-filter>

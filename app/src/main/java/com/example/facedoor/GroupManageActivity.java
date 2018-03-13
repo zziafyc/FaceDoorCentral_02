@@ -375,8 +375,15 @@ public class GroupManageActivity extends BaseAppCompatActivity implements OnClic
             adp.notifyDataSetChanged();
         }
         SharedPreferences config = getSharedPreferences(MyApp.CONFIG, MODE_PRIVATE);
+        SharedPreferences.Editor editor = config.edit();
         int faceVocal = config.getInt(MyApp.FACEONLY, 0);
         int faceDetect = config.getInt(MyApp.FACEDETECT, 0);
+        if (faceVocal == 0) {
+            editor.putInt(MyApp.FACEONLY, 0);
+        }
+        if (faceDetect == 0) {
+            editor.putInt(MyApp.FACEDETECT, 0);
+        }
         spinner.setSelection(faceVocal);
         spinnerFaceDetect.setSelection(faceDetect);
 

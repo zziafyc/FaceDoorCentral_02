@@ -33,6 +33,7 @@ import com.iflytek.cloud.VerifierListener;
 import com.iflytek.cloud.VerifierResult;
 import com.iflytek.cloud.record.PcmRecorder;
 import com.iflytek.cloud.record.PcmRecorder.PcmRecordListener;
+import com.iflytek.cloud.util.VerifierUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,9 +54,9 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
-public class IdentifyActivity extends Activity {
+public class IdentifyActivity2 extends Activity {
 
-    private static final String TAG = IdentifyActivity.class.getSimpleName();
+    private static final String TAG = IdentifyActivity2.class.getSimpleName();
     private static final String CROP_FACE_PATH = "/mnt/sdcard/FaceVocal/crop.jpg";
 
     private Toast mToast;
@@ -81,7 +82,7 @@ public class IdentifyActivity extends Activity {
     private int mSST = 0;
     // 验证
     private static final int SST_VERIFY = 1;
-    private String mTextPwd = "芝麻开门";
+    //private String mTextPwd = "芝麻开门";
     // 用于验证的数字密码
     private String mVerifyNumPwd = "";
     // 是否可以录音
@@ -90,10 +91,10 @@ public class IdentifyActivity extends Activity {
     private boolean mCanStartRecord = false;
     // 录音采样率
     private final int SAMPLE_RATE = 16000;
-    // 密码类型
     // 默认为数字密码
+    private static final int PWD_TYPE_TEXT = 3;
+    // 密码类型
     private int mPwdType = PWD_TYPE_TEXT;
-    private static final int PWD_TYPE_TEXT = 1;
     // 声纹验证通过时间
     private static final int VOICE_SUCCESS = 2000;
     // 声纹验证失败时间
@@ -169,7 +170,7 @@ public class IdentifyActivity extends Activity {
         initUI();
         initUDP();
         getPhoto();
-        mVerifier = SpeakerVerifier.createVerifier(IdentifyActivity.this, null);
+        mVerifier = SpeakerVerifier.createVerifier(IdentifyActivity2.this, null);
 
         mProDialog = new ProgressDialog(this);
         mProDialog.setCancelable(true);
@@ -184,7 +185,7 @@ public class IdentifyActivity extends Activity {
                 }
             }
         });
-        mRecognizer = SpeechRecognizer.createRecognizer(IdentifyActivity.this, null);
+        mRecognizer = SpeechRecognizer.createRecognizer(IdentifyActivity2.this, null);
         mRecognizer.setParameter(SpeechConstant.DOMAIN, "iat");
         mRecognizer.setParameter(SpeechConstant.LANGUAGE, "zh_cn");
         mRecognizer.setParameter(SpeechConstant.ACCENT, "mandarin");
@@ -384,7 +385,12 @@ public class IdentifyActivity extends Activity {
                                     if (faceVocal == 1) {
                                         faceOnlySuceess();
                                     } else {
-                                        mResultEditText.setText("您的验证码：" + "芝麻开门");
+                                        mSST = SST_VERIFY;
+                                        mVerifyNumPwd = VerifierUtil.generateNumberPassword(8);
+
+                                        StringBuffer strBuffer = new StringBuffer();
+                                        strBuffer.append("您的验证码：" + mVerifyNumPwd + "\n");
+                                        mResultEditText.setText(strBuffer.toString());
                                         if (mSpeaker != null) {
                                             mSpeaker.startSpeaking("请读出验证码", new SynthesizerListener() {
                                                 @Override
@@ -487,7 +493,7 @@ public class IdentifyActivity extends Activity {
         Observable.just(usrID).map(new Func1<Integer, String>() {
             @Override
             public String call(Integer arg0) {
-                DBUtil dbUtil = new DBUtil(IdentifyActivity.this);
+                DBUtil dbUtil = new DBUtil(IdentifyActivity2.this);
                 String userName = dbUtil.queryStaffIdAndName(arg0);
                 if (userName != null) {
                     String staffID = userName.split("[;]")[0];
@@ -540,7 +546,7 @@ public class IdentifyActivity extends Activity {
         // 对于某些麦克风非常灵敏的机器，如nexus、samsung i9300等，建议加上以下设置对录音进行消噪处理
         // mVerify.setParameter(SpeechConstant.AUDIO_SOURCE, "" +
         // MediaRecorder.AudioSource.VOICE_RECOGNITION);
-        mVerifier.setParameter(SpeechConstant.ISV_PWD, mTextPwd);
+        mVerifier.setParameter(SpeechConstant.ISV_PWD, mVerifyNumPwd);
         // 设置auth_id，不能设置为空
         mVerifier.setParameter(SpeechConstant.AUTH_ID, authId);
         mVerifier.setParameter(SpeechConstant.ISV_PWDT, "" + mPwdType);
@@ -577,7 +583,7 @@ public class IdentifyActivity extends Activity {
                 Observable.just(usrID).map(new Func1<Integer, String>() {
                     @Override
                     public String call(Integer arg0) {
-                        DBUtil dbUtil = new DBUtil(IdentifyActivity.this);
+                        DBUtil dbUtil = new DBUtil(IdentifyActivity2.this);
                         String userName = dbUtil.queryStaffIdAndName(arg0);
                         if (userName != null) {
                             String staffID = userName.split("[;]")[0];
@@ -604,13 +610,13 @@ public class IdentifyActivity extends Activity {
                                         final String num1 = str[0];
                                         final String name1 = str[1];
                                         mResultEditText.setText("验证通过，声纹得分：" + result.score);
-                                       // ToastShow.showTip(mToast, "你好" + name1);
+                                        // ToastShow.showTip(mToast, "你好" + name1);
                                         //Openable door = new DoorZY("192.168.1.112", 6001);
                                         //Openable door = new DoorJH(IdentifyActivity.this);
                                         //door.open();
                                         num.setText(num1);
                                         name.setText(name1);
-                                        mSpeaker.startSpeaking(name1+"允许进入", new SynthesizerListener() {
+                                        mSpeaker.startSpeaking(name1 + "允许进入", new SynthesizerListener() {
                                             @Override
                                             public void onSpeakBegin() {
 

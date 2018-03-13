@@ -35,5 +35,6 @@
     <string name="update_product_message">当前产品中内核资源版本过低，请前往DUI控制台对应的产品中，选择最新的内核资源版本并重新发布产品。</string>
     <string name="update_product_ok">确定</string>
     <string name="update_product_cancel">退出</string>
+    <string name="title_vocal_demo">声纹注册</string>
 
 </resources>

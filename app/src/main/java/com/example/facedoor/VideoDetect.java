@@ -99,7 +99,7 @@ public class VideoDetect extends BaseAppCompatActivity implements DialogInterfac
         mBuffer = new byte[PREVIEW_WIDTH * PREVIEW_HEIGHT * 2];
         mAcc = new Accelerometer(this);
         mFaceDetector = FaceDetector.createDetector(this, null);
-        mIntent = new Intent(VideoDetect.this, IdentifyActivity.class);
+        mIntent = new Intent(VideoDetect.this, IdentifyActivity2.class);
     }
 
     @Override
