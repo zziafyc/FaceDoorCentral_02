@@ -253,7 +253,7 @@ public class FaceIndexActivity extends BaseAppCompatActivity implements DialogIn
             hiStr = getString(R.string.hi_str, wakeupWords[0]);
             wakeUpString = wakeupWords[0];
         } else {
-            wakeUpString = "你好小驰";
+            wakeUpString = "你好小用";
         }
         if (!StringUtils.isEmpty(wakeUpString)) {
             wakeTv.setText("点击或者读出“" + wakeUpString + "“");
@@ -263,7 +263,8 @@ public class FaceIndexActivity extends BaseAppCompatActivity implements DialogIn
 
     public void enableWakeIfNecessary() {
         try {
-            DDS.getInstance().getAgent().enableWakeup();
+            DDS.getInstance().getAgent().getWakeupEngine().enableWakeup();
+            // DDS.getInstance().getAgent().enableWakeup();
         } catch (DDSNotInitCompleteException e) {
             e.printStackTrace();
         }
@@ -272,7 +273,8 @@ public class FaceIndexActivity extends BaseAppCompatActivity implements DialogIn
     public void disableWakeIfNecessary() {
         try {
             DDS.getInstance().getAgent().stopDialog();
-            DDS.getInstance().getAgent().disableWakeup();
+            //DDS.getInstance().getAgent().disableWakeup();
+            DDS.getInstance().getAgent().getWakeupEngine().disableWakeup();
         } catch (DDSNotInitCompleteException e) {
             e.printStackTrace();
         }

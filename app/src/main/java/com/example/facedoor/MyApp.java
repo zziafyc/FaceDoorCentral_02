@@ -56,7 +56,7 @@ public class MyApp extends Application {
     public void onTerminate() {
         super.onTerminate();
         db.closeDB();
-        //stopService(serviceIntent);
+        stopService(serviceIntent);
         System.exit(1);
     }
 }
